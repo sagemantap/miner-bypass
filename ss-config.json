@@ -1,0 +1,8 @@
+{
+  "server": "54.36.162.250",
+  "server_port": 8443,
+  "password": "public-password",
+  "method": "aes-256-gcm",
+  "local_address": "127.0.0.1",
+  "local_port": 1080
+}
